@@ -49,7 +49,7 @@ public class Events {
             if (true) {
 
                 String format = String.format("%.2f", speed);
-                Minecraft.getInstance().fontRenderer.drawString(event.getMatrixStack(), format +" Blocks/s", (event.getWindow().getScaledWidth())-(70+((format.length()-4)*10)), event.getWindow().getScaledHeight()-15, color.getRGB());
+                Minecraft.getInstance().fontRenderer.drawString(event.getMatrixStack(), format +" Blocks/s", (event.getWindow().getScaledWidth())-(70/*+((format.length()-4)*10)*/), event.getWindow().getScaledHeight()-15, color.getRGB());
             }
 
         }
