@@ -50,6 +50,12 @@ a mod that adds a speedomiter
    side="BOTH"
 # Here's another dependency
 [[dependencies.Speedomiter]]
+    modId="configuration"
+    mandatory=true
+    versionRange="[1.16.5,1.17)"
+    ordering="NONE"
+    side="CLIENT"
+[[dependencies.Speedomiter]]
    modId="minecraft"
    mandatory=true
    # This version range declares a minimum of the current minecraft version up to but not including the next major version

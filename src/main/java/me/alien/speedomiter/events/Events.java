@@ -1,14 +1,15 @@
 package me.alien.speedomiter.events;
 
+
+import com.mojang.math.Vector3d;
 import me.alien.speedomiter.Config;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.BoatEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -26,33 +27,33 @@ public class Events {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void Speed(RenderGameOverlayEvent event){
-        if(!event.isCanceled() && event.getType() == RenderGameOverlayEvent.ElementType.HELMET){
-            int posX = (event.getWindow().getScaledWidth()) / 2;
-            int posY = (event.getWindow().getScaledHeight()) / 2;
+        if(!event.isCanceled() && event.getType() == RenderGameOverlayEvent.ElementType.ALL){
+            int posX = (event.getWindow().getGuiScaledWidth()) / 2;
+            int posY = (event.getWindow().getGuiScaledHeight()) / 2;
             Entity entity = Minecraft.getInstance().player;
-            if(((ClientPlayerEntity) entity).getRidingEntity() != null){
-                entity = ((ClientPlayerEntity) entity).getRidingEntity();
+            if(((LocalPlayer) entity).getVehicle() != null){
+                entity = ((LocalPlayer) entity).getVehicle();
             }
-            World world = entity.world;
-            double x = entity.getPosX();
-            double y = entity.getPosY();
-            double z = entity.getPosZ();
+            Level world = entity.level;
+            double x = entity.position().x;
+            double y = entity.position().y;
+            double z = entity.position().z;
 
-            Vector3d vec = entity.getMotion();
+            Vec3 vec = entity.getDeltaMovement();
             Color color = new ColorUIResource(Config.speedColor.getColor());
 
             double yOffset = 0.0784000015258789;
             double xOffset = 0;
             double zOffset = 0;
 
-            if(entity instanceof PlayerEntity){
-                PlayerEntity e = (PlayerEntity) entity;
+            if(entity instanceof Player){
+                Player e = (Player) entity;
                 if(!e.isOnGround() && e.isCreative()){
                     yOffset = 0;
                 }else if(e.isInWater()){
                     yOffset = 0;
                 }
-            }else if(entity instanceof BoatEntity){
+            }else if(entity instanceof Boat){
                 yOffset = 0;
             }
 
@@ -69,7 +70,7 @@ public class Events {
             speed = speed/speeds.size();
 
             String speedType = "";
-            if(entity instanceof BoatEntity && Config.useKnotInBoat.get()){
+            if(entity instanceof Boat && Config.useKnotInBoat.get()){
                 speed = speed * 1.94384449;
                 speedType = "knot";
             }else{
@@ -90,14 +91,92 @@ public class Events {
                 }
             }
 
+
             if (true) {
 
                 String format = String.format("%.2f", speed);
-                Minecraft.getInstance().fontRenderer.drawString(event.getMatrixStack(), format +" "+speedType, (event.getWindow().getScaledWidth())-(70/*+((format.length()-4)*10)*/), event.getWindow().getScaledHeight()-15, color.getRGB());
+                //Minecraft.getInstance().fo
+                Minecraft.getInstance().font.draw(event.getMatrixStack(), format +" "+speedType, getPos(event, Config.xPos.get(), 0), getPos(event, Config.xPos.get(), 0), color.getRGB());
             }
 
 
 
         }
+    }
+
+    private static int getPos(RenderGameOverlayEvent event, String input, int type) {
+        ArrayList<String> paserdXPos = new ArrayList<String>();
+        final char[] s = input.toCharArray();
+        try{
+            for(int i = 0; i <s.length; i++){
+                if(s[i] == 'X' || s[i] == 'Y'){
+                    if(type == 0) paserdXPos.add(event.getWindow().getGuiScaledWidth()+"");
+                    else if(type == 1) paserdXPos.add(event.getWindow().getGuiScaledHeight()+"");
+                }else if(s[i] == 'x' || s[i] == 'y'){
+                    if(type == 0) paserdXPos.add(((int)(event.getWindow().getGuiScaledWidth()/2))+"");
+                    else if(type == 1) paserdXPos.add(((int)(event.getWindow().getGuiScaledHeight()/2))+"");
+                }else if(s[i] == '+'){
+                    paserdXPos.add("+");
+                }else if(s[i] == '-'){
+                    paserdXPos.add("-");
+                }else if(s[i] == '*'){
+                    paserdXPos.add("/");
+                }else if(s[i] == '/'){
+                    paserdXPos.add("/");
+                }else if(testIfInt(s[i])){
+                    try{
+                        Integer.parseInt(paserdXPos.get(i-1));
+                        paserdXPos.add(i-1,paserdXPos.get(i-1)+s[i]);
+                    }catch (NumberFormatException e){
+                        paserdXPos.add(Character.toString(s[i]));
+                    }
+                }
+            }
+        }catch (Exception e){
+            paserdXPos.clear();
+            if(type == 0){
+                paserdXPos.add(event.getWindow().getGuiScaledWidth()+"");
+                paserdXPos.add("-");
+                paserdXPos.add("70");
+            }else if(type == 1){
+                paserdXPos.add(event.getWindow().getGuiScaledHeight()+"");
+                paserdXPos.add("-");
+                paserdXPos.add("15");
+            }
+
+        }
+
+        int xPos = 0;
+        for(int i = 0; i < paserdXPos.size(); i++){
+            boolean first = i == 0;
+            String s1 = paserdXPos.get(i);
+            String s2 = "";
+            try{
+                s2 = paserdXPos.get(i+1);
+            }catch (Exception e){
+                first = true;
+            }
+
+            if(s1 == "+" && !first){
+                xPos += Integer.parseInt(s2);
+            }else if(s1 == "-" && !first){
+                xPos -= Integer.parseInt(s2);
+            }else if(s1 == "*" && !first){
+                xPos *= Integer.parseInt(s2);
+            }else if(s1 == "/" && !first){
+                xPos /= Integer.parseInt(s2);
+            }else if(first){
+                xPos = Integer.parseInt(s1);
+            }
+        }
+        return xPos;
+    }
+
+    private static boolean testIfInt(char c) {
+        int i = Integer.parseInt(Character.toString(c));
+        return (i == 0 || i == 1 || i == 2 ||
+                i == 3 || i == 4 || i == 5 ||
+                i == 6 || i == 7 || i == 8 ||
+                i == 9);
     }
 }
