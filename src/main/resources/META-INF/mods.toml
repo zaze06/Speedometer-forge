@@ -21,7 +21,7 @@ modId="speedometer" #mandatory
 # see the associated build.gradle script for how to populate this completely automatically during a build
 version="${file.jarVersion}" #mandatory
 # A display name for the mod
-displayName="Speedomiter" #mandatory
+displayName="Speedometer" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -34,10 +34,10 @@ displayName="Speedomiter" #mandatory
 authors="Alien" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-a mod that adds a speedomiter
+a mod that adds a speedometer to show you'r speed
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.Speedomiter]] #optional
+[[dependencies.speedometer]] #optional
    # the modid of the dependency
    modId="forge" #mandatory
    # Does this dependency have to exist - if not, ordering below must be specified
@@ -49,16 +49,16 @@ a mod that adds a speedomiter
    # Side this dependency is applied on - BOTH, CLIENT or SERVER
    side="BOTH"
 # Here's another dependency
-[[dependencies.Speedomiter]]
-    modId="configuration"
-    mandatory=true
-    versionRange="[1.16.5,1.17)"
-    ordering="NONE"
-    side="CLIENT"
-[[dependencies.Speedomiter]]
+#[[dependencies.speedometer]]
+#    modId="configuration"
+#    mandatory=true
+#    versionRange="[1.17.1,1.18)"
+#    ordering="NONE"
+#    side="CLIENT"
+[[dependencies.speedometer]]
    modId="minecraft"
    mandatory=true
    # This version range declares a minimum of the current minecraft version up to but not including the next major version
-   versionRange="[1.16.5,1.17)"
+   versionRange="[1.17.1,1.18)"
    ordering="NONE"
    side="BOTH"

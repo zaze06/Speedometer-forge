@@ -123,9 +123,10 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.17.1-37.0.10'
 
-    compileOnly fg.deobf('curse.maven:configuration-444699:3404217')
-    runtimeOnly fg.deobf('curse.maven:configuration-444699:3404217')
-    //implumentation fg.deobf('curse.maven:configuration-444699:3365669')
+    //compileOnly fg.deobf('curse.maven:configuration-444699:3404217')
+    //runtimeOnly fg.deobf('curse.maven:configuration-444699:3404217')
+
+    //implementation fg.deobf('curse.maven:configuration-444699:3404217')
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"

@@ -1,8 +1,6 @@
 package me.alien.speedomiter.events;
 
-
-import com.mojang.math.Vector3d;
-import me.alien.speedomiter.Config;
+//import me.alien.speedomiter.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
@@ -19,6 +17,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Events {
 
@@ -40,7 +39,7 @@ public class Events {
             double z = entity.position().z;
 
             Vec3 vec = entity.getDeltaMovement();
-            Color color = new ColorUIResource(Config.speedColor.getColor());
+            Color color = new ColorUIResource(16, 146, 158/*Config.speedColor.getColor()*/);
 
             double yOffset = 0.0784000015258789;
             double xOffset = 0;
@@ -70,11 +69,11 @@ public class Events {
             speed = speed/speeds.size();
 
             String speedType = "";
-            if(entity instanceof Boat && Config.useKnotInBoat.get()){
+            if(entity instanceof Boat && true/*Config.useKnotInBoat.get()*/){
                 speed = speed * 1.94384449;
                 speedType = "knot";
             }else{
-                switch (Config.speedType.get()){
+                switch (1/*Config.speedType.get()*/){
                     case 2:
                         speedType = "Blocks/s";
                         break;
@@ -96,7 +95,12 @@ public class Events {
 
                 String format = String.format("%.2f", speed);
                 //Minecraft.getInstance().fo
-                Minecraft.getInstance().font.draw(event.getMatrixStack(), format +" "+speedType, getPos(event, Config.xPos.get(), 0), getPos(event, Config.xPos.get(), 0), color.getRGB());
+                Minecraft.getInstance().font.draw(
+                        event.getMatrixStack(),
+                        format +" "+speedType,
+                        getPos(event, /*Config.xPos.get()*//*"X-70"*/"a", 0, false),
+                        getPos(event, /*Config.xPos.get()*//*"Y-15"*/"a", 1, true),
+                        color.getRGB());
             }
 
 
@@ -104,55 +108,61 @@ public class Events {
         }
     }
 
-    private static int getPos(RenderGameOverlayEvent event, String input, int type) {
-        ArrayList<String> paserdXPos = new ArrayList<String>();
+    static boolean flag = true;
+
+    private static int getPos(RenderGameOverlayEvent event, String input, int type, boolean changeFlag) {
+        ArrayList<String> paserdPos = new ArrayList<String>();
         final char[] s = input.toCharArray();
         try{
             for(int i = 0; i <s.length; i++){
                 if(s[i] == 'X' || s[i] == 'Y'){
-                    if(type == 0) paserdXPos.add(event.getWindow().getGuiScaledWidth()+"");
-                    else if(type == 1) paserdXPos.add(event.getWindow().getGuiScaledHeight()+"");
+                    if(type == 0) paserdPos.add(event.getWindow().getGuiScaledWidth()+"");
+                    else if(type == 1) paserdPos.add(event.getWindow().getGuiScaledHeight()+"");
                 }else if(s[i] == 'x' || s[i] == 'y'){
-                    if(type == 0) paserdXPos.add(((int)(event.getWindow().getGuiScaledWidth()/2))+"");
-                    else if(type == 1) paserdXPos.add(((int)(event.getWindow().getGuiScaledHeight()/2))+"");
+                    if(type == 0) paserdPos.add(((int)(event.getWindow().getGuiScaledWidth()/2))+"");
+                    else if(type == 1) paserdPos.add(((int)(event.getWindow().getGuiScaledHeight()/2))+"");
                 }else if(s[i] == '+'){
-                    paserdXPos.add("+");
+                    paserdPos.add("+");
                 }else if(s[i] == '-'){
-                    paserdXPos.add("-");
+                    paserdPos.add("-");
                 }else if(s[i] == '*'){
-                    paserdXPos.add("/");
+                    paserdPos.add("/");
                 }else if(s[i] == '/'){
-                    paserdXPos.add("/");
+                    paserdPos.add("/");
                 }else if(testIfInt(s[i])){
                     try{
-                        Integer.parseInt(paserdXPos.get(i-1));
-                        paserdXPos.add(i-1,paserdXPos.get(i-1)+s[i]);
+                        Integer.parseInt(paserdPos.get(i-1));
+                        paserdPos.add(i-1,paserdPos.get(i-1)+s[i]);
                     }catch (NumberFormatException e){
-                        paserdXPos.add(Character.toString(s[i]));
+                        paserdPos.add(Character.toString(s[i]));
                     }
+                }else{
+                    throw new Exception();
                 }
             }
         }catch (Exception e){
-            paserdXPos.clear();
+            paserdPos.clear();
             if(type == 0){
-                paserdXPos.add(event.getWindow().getGuiScaledWidth()+"");
-                paserdXPos.add("-");
-                paserdXPos.add("70");
+                paserdPos.add(event.getWindow().getGuiScaledWidth()+"");
+                paserdPos.add("-");
+                paserdPos.add("70");
             }else if(type == 1){
-                paserdXPos.add(event.getWindow().getGuiScaledHeight()+"");
-                paserdXPos.add("-");
-                paserdXPos.add("15");
+                paserdPos.add(event.getWindow().getGuiScaledHeight()+"");
+                paserdPos.add("-");
+                paserdPos.add("15");
             }
-
         }
 
+
+
         int xPos = 0;
-        for(int i = 0; i < paserdXPos.size(); i++){
+        xPos = Integer.parseInt(paserdPos.get(0));
+        for(int i = 1; i < paserdPos.size(); i++){
             boolean first = i == 0;
-            String s1 = paserdXPos.get(i);
+            String s1 = paserdPos.get(i);
             String s2 = "";
             try{
-                s2 = paserdXPos.get(i+1);
+                s2 = paserdPos.get(i+1);
             }catch (Exception e){
                 first = true;
             }
@@ -165,9 +175,12 @@ public class Events {
                 xPos *= Integer.parseInt(s2);
             }else if(s1 == "/" && !first){
                 xPos /= Integer.parseInt(s2);
-            }else if(first){
-                xPos = Integer.parseInt(s1);
             }
+        }
+        if(flag) {
+            System.out.println(Arrays.toString(paserdPos.toArray()));
+            System.out.println(xPos+"");
+            flag = !changeFlag;
         }
         return xPos;
     }

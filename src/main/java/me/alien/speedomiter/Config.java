@@ -1,4 +1,4 @@
-package me.alien.speedomiter;
+/*package me.alien.speedomiter;
 
 import dev.toma.configuration.api.IConfigPlugin;
 import dev.toma.configuration.api.IConfigWriter;
@@ -34,4 +34,4 @@ public class Config implements IConfigPlugin {
     public String getModID() {
         return Main.MODID;
     }
-}
+}*/
