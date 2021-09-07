@@ -1,6 +1,6 @@
 package me.alien.speedomiter.events;
 
-//import me.alien.speedomiter.Config;
+import me.alien.speedomiter.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
@@ -39,74 +39,81 @@ public class Events {
             double z = entity.position().z;
 
             Vec3 vec = entity.getDeltaMovement();
-            Color color = new ColorUIResource(16, 146, 158/*Config.speedColor.getColor()*/);
+            Color color = new ColorUIResource(Config.speedometer.speedColor.getColor());
 
-            double yOffset = 0.0784000015258789;
-            double xOffset = 0;
-            double zOffset = 0;
+            if(Config.speedometer.isEnabled.get()) {
+                double yOffset = 0.0784000015258789;
+                double xOffset = 0;
+                double zOffset = 0;
 
-            if(entity instanceof Player){
-                Player e = (Player) entity;
-                if(!e.isOnGround() && e.isCreative()){
-                    yOffset = 0;
-                }else if(e.isInWater()){
+                if (entity instanceof Player) {
+                    Player e = (Player) entity;
+                    if (!e.isOnGround() && e.isCreative()) {
+                        yOffset = 0;
+                    } else if (e.isInWater()) {
+                        yOffset = 0;
+                    }
+                } else if (entity instanceof Boat) {
                     yOffset = 0;
                 }
-            }else if(entity instanceof Boat){
-                yOffset = 0;
-            }
 
-            double speed = Math.sqrt(Math.pow(vec.x+xOffset, 2) + Math.pow(vec.y+yOffset, 2) + Math.pow(vec.z+zOffset, 2))*20;
-            //Minecraft.getInstance().
-            if(speeds.size() >= 30){
-                speeds.remove(0);
-            }
-            speeds.add(speed);
-            speed = 0;
-            for(int i = 0; i < speeds.size(); i++){
-                speed += speeds.get(i);
-            }
-            speed = speed/speeds.size();
+                double speed = Math.sqrt(Math.pow(vec.x + xOffset, 2) + Math.pow(vec.y + yOffset, 2) + Math.pow(vec.z + zOffset, 2)) * 20;
+                //Minecraft.getInstance().
+                if (speeds.size() >= 30) {
+                    speeds.remove(0);
+                }
+                speeds.add(speed);
+                speed = 0;
+                for (int i = 0; i < speeds.size(); i++) {
+                    speed += speeds.get(i);
+                }
+                speed = speed / speeds.size();
 
-            String speedType = "";
-            if(entity instanceof Boat && true/*Config.useKnotInBoat.get()*/){
-                speed = speed * 1.94384449;
-                speedType = "knot";
-            }else{
-                switch (1/*Config.speedType.get()*/){
-                    case 2:
-                        speedType = "Blocks/s";
-                        break;
-                    case 3:
-                        speedType = "km/h";
-                        speed = speed * 3.6;
-                        break;
-                    case 4:
-                        speedType = "mph";
-                        speed = speed * 2.23693629;
-                        break;
-                    default:
-                        speedType = "m/s";
+                String speedType = "";
+                if (entity instanceof Boat && Config.speedometer.useKnotInBoat.get()) {
+                    speed = speed * 1.94384449;
+                    speedType = "knot";
+                } else {
+                    switch (Config.speedometer.speedType.get()) {
+                        case 2:
+                            speedType = "Blocks/s";
+                            break;
+                        case 3:
+                            speedType = "km/h";
+                            speed = speed * 3.6;
+                            break;
+                        case 4:
+                            speedType = "mph";
+                            speed = speed * 2.23693629;
+                            break;
+                        default:
+                            speedType = "m/s";
+                    }
+                }
+
+
+                if (true) {
+
+                    String format = String.format("%.2f", speed);
+                    //Minecraft.getInstance().fo
+                    Minecraft.getInstance().font.draw(
+                            event.getMatrixStack(),
+                            format + " " + speedType,
+                            getPos(event, Config.speedometer.xPos.get()/*"W-70"*/, 0, false),
+                            getPos(event, Config.speedometer.yPos.get()/*"Y-15""H-15"*/, 1, true),
+                            color.getRGB());
                 }
             }
-
-
-            if (true) {
-
-                String format = String.format("%.2f", speed);
-                //Minecraft.getInstance().fo
-                Minecraft.getInstance().font.draw(
-                        event.getMatrixStack(),
-                        format +" "+speedType,
-                        getPos(event, /*Config.xPos.get()*//*"X-70"*/"a", 0, false),
-                        getPos(event, /*Config.xPos.get()*//*"Y-15"*/"a", 1, true),
-                        color.getRGB());
+            if(Config.combat.isEnabled.get()) {
+                if(Config.combat.Combo)
             }
-
-
 
         }
     }
+
+
+
+
 
     static boolean flag = true;
 
@@ -115,10 +122,10 @@ public class Events {
         final char[] s = input.toCharArray();
         try{
             for(int i = 0; i <s.length; i++){
-                if(s[i] == 'X' || s[i] == 'Y'){
+                if(s[i] == 'W' || s[i] == 'H'){
                     if(type == 0) paserdPos.add(event.getWindow().getGuiScaledWidth()+"");
                     else if(type == 1) paserdPos.add(event.getWindow().getGuiScaledHeight()+"");
-                }else if(s[i] == 'x' || s[i] == 'y'){
+                }else if(s[i] == 'h' || s[i] == 'w'){
                     if(type == 0) paserdPos.add(((int)(event.getWindow().getGuiScaledWidth()/2))+"");
                     else if(type == 1) paserdPos.add(((int)(event.getWindow().getGuiScaledHeight()/2))+"");
                 }else if(s[i] == '+'){
@@ -156,7 +163,21 @@ public class Events {
 
 
         int xPos = 0;
-        xPos = Integer.parseInt(paserdPos.get(0));
+        try{
+            xPos = Integer.parseInt(paserdPos.get(0));
+        }catch (NumberFormatException e){
+            if(type == 0){
+                paserdPos.add(event.getWindow().getGuiScaledWidth()+"");
+                paserdPos.add("-");
+                paserdPos.add("70");
+            }else if(type == 1){
+                paserdPos.add(event.getWindow().getGuiScaledHeight()+"");
+                paserdPos.add("-");
+                paserdPos.add("15");
+            }
+            xPos = Integer.parseInt(paserdPos.get(0));
+        }
+
         for(int i = 1; i < paserdPos.size(); i++){
             boolean first = i == 0;
             String s1 = paserdPos.get(i);
