@@ -4,6 +4,7 @@ import me.alien.speedomiter.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.Level;
@@ -11,6 +12,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -22,6 +25,7 @@ import java.util.Arrays;
 public class Events {
 
     static ArrayList<Double> speeds = new ArrayList<Double>();
+    static int combo = 0;
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -105,13 +109,38 @@ public class Events {
                 }
             }
             if(Config.combat.isEnabled.get()) {
-                if(Config.combat.Combo)
+                if(Config.combat.combo.isEnabled.get()){
+                    Minecraft.getInstance().font.draw(
+                            event.getMatrixStack(),
+                            combo+"",
+                            getPos(event, Config.speedometer.xPos.get()/*"W-70"*/, 0, false),
+                            getPos(event, Config.speedometer.yPos.get()/*"Y-15""H-15"*/, 1, true),
+                            color.getRGB());
+                }
             }
 
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent(priority = EventPriority.NORMAL)
+    public static void onHit(AttackEntityEvent e){
+        if(e.getTarget() instanceof LivingEntity){
+            if(e.getPlayer() == Minecraft.getInstance().player){
+                combo++;
+            }
+        }
+    }
 
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent(priority = EventPriority.NORMAL)
+    public static void onDamage(LivingDamageEvent e){
+        if(e.getEntity() instanceof Player){
+            if(e.getEntity() == Minecraft.getInstance().player){
+                combo = 0;
+            }
+        }
+    }
 
 
 
