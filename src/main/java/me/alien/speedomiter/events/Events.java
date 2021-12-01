@@ -43,9 +43,9 @@ public class Events {
             double z = entity.position().z;
 
             Vec3 vec = entity.getDeltaMovement();
-            Color color = new ColorUIResource(Config.speedometer.speedColor.getColor());
+            Color color = new ColorUIResource(Integer.parseInt((String) Config.Client.color.get(), 16));
 
-            if(Config.speedometer.isEnabled.get()) {
+            if(Config.Client.enabled.get()) {
                 double yOffset = 0.0784000015258789;
                 double xOffset = 0;
                 double zOffset = 0;
@@ -74,24 +74,17 @@ public class Events {
                 speed = speed / speeds.size();
 
                 String speedType = "";
-                if (entity instanceof Boat && Config.speedometer.useKnotInBoat.get()) {
+                if (entity instanceof Boat && Config.Client.useKnotInBoat.get()) {
                     speed = speed * 1.94384449;
                     speedType = "knot";
                 } else {
-                    switch (Config.speedometer.speedType.get()) {
-                        case 2:
-                            speedType = "Blocks/s";
-                            break;
-                        case 3:
-                            speedType = "km/h";
-                            speed = speed * 3.6;
-                            break;
-                        case 4:
-                            speedType = "mph";
-                            speed = speed * 2.23693629;
-                            break;
-                        default:
-                            speedType = "m/s";
+                    speedType = (String) Config.Client.speedType.get();
+                    if (speedType.equals("km/h")) {
+                        speed = speed * 3.6;
+                    } else if (speedType.equals("mph")) {
+                        speed = speed * 2.23693629;
+                    } else {
+                        speedType = "m/s";
                     }
                 }
 
@@ -103,21 +96,21 @@ public class Events {
                     Minecraft.getInstance().font.draw(
                             event.getMatrixStack(),
                             format + " " + speedType,
-                            getPos(event, Config.speedometer.xPos.get()/*"W-70"*/, 0, false),
-                            getPos(event, Config.speedometer.yPos.get()/*"Y-15""H-15"*/, 1, true),
+                            getPos(event, (String) Config.Client.xPos.get()/*"W-70"*/, 0, false),
+                            getPos(event, (String) Config.Client.yPos.get()/*"Y-15""H-15"*/, 1, true),
                             color.getRGB());
                 }
             }
-            if(Config.combat.isEnabled.get()) {
+            /*if(Config.combat.isEnabled.get()) {
                 if(Config.combat.combo.isEnabled.get()){
                     Minecraft.getInstance().font.draw(
                             event.getMatrixStack(),
                             combo+"",
-                            getPos(event, Config.speedometer.xPos.get()/*"W-70"*/, 0, false),
-                            getPos(event, Config.speedometer.yPos.get()/*"Y-15""H-15"*/, 1, true),
+                            getPos(event, Config.speedometer.xPos.get()/*"W-70"*//*, 0, false),
+                            getPos(event, Config.speedometer.yPos.get()/*"Y-15""H-15"*//*, 1, true),
                             color.getRGB());
                 }
-            }
+            }*/
 
         }
     }
