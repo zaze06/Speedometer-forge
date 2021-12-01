@@ -1,2 +1,2 @@
 # Speedometer 1.18
-Thsi is curently now working waiting for Configuration mod to be avalible for 1.18
+Speedomiter is now for 1.18! just a day after the first forge for 1.18 got relised :)
