@@ -63,7 +63,7 @@ public class Events {
 
                 double speed = Math.sqrt(Math.pow(vec.x + xOffset, 2) + Math.pow(vec.y + yOffset, 2) + Math.pow(vec.z + zOffset, 2)) * 20;
                 //Minecraft.getInstance().
-                if (speeds.size() >= 30) {
+                if (speeds.size() >= Config.Client.maxSampleSize.get()) {
                     speeds.remove(0);
                 }
                 speeds.add(speed);
