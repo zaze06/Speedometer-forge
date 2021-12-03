@@ -1,6 +1,6 @@
-package me.alien.speedomiter.events;
+package me.alien.speedometer.events;
 
-import me.alien.speedomiter.Config;
+import me.alien.speedometer.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;

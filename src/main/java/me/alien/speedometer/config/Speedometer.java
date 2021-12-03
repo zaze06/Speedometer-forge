@@ -1,11 +1,10 @@
-package me.alien.speedomiter.config;
+package me.alien.speedometer.config;
 
 import dev.toma.configuration.api.IConfigWriter;
 import dev.toma.configuration.api.INameable;
 import dev.toma.configuration.api.IObjectSpec;
 import dev.toma.configuration.api.NumberDisplayType;
 import dev.toma.configuration.api.type.*;
-import me.alien.speedomiter.Config;
 
 public class Speedometer extends ObjectType {
 

@@ -1,4 +1,4 @@
-package me.alien.speedomiter;
+package me.alien.speedometer;
 
 import dev.toma.configuration.api.IConfigPlugin;
 import dev.toma.configuration.api.IConfigWriter;
@@ -6,12 +6,8 @@ import dev.toma.configuration.api.IObjectSpec;
 import dev.toma.configuration.api.Restrictions;
 import dev.toma.configuration.api.type.*;
 import dev.toma.configuration.internal.ObjectSpec;
-import me.alien.speedomiter.config.Combat;
-import me.alien.speedomiter.config.Speedometer;
-import net.minecraftforge.fml.config.IConfigSpec;
-
-import java.util.function.Function;
-import java.util.regex.Pattern;
+import me.alien.speedometer.config.Combat;
+import me.alien.speedometer.config.Speedometer;
 
 @dev.toma.configuration.api.Config
 public class Config implements IConfigPlugin {

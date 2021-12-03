@@ -1,6 +1,5 @@
-package me.alien.speedomiter.config;
+package me.alien.speedometer.config;
 
-import ca.weblite.objc.Proxy;
 import dev.toma.configuration.api.IConfigWriter;
 import dev.toma.configuration.api.IObjectSpec;
 import dev.toma.configuration.api.type.BooleanType;
