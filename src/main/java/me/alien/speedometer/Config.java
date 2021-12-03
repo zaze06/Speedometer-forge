@@ -1,4 +1,4 @@
-package me.alien.speedomiter;
+package me.alien.speedometer;
 
 import ca.weblite.objc.Proxy;
 import net.minecraftforge.common.ForgeConfigSpec;
