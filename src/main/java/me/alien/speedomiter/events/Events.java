@@ -2,7 +2,6 @@ package me.alien.speedomiter.events;
 
 import me.alien.speedomiter.Config;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -24,34 +23,34 @@ import java.util.Arrays;
 
 public class Events {
 
-    static ArrayList<Double> speeds = new ArrayList<Double>();
+    static ArrayList<Double> speeds = new ArrayList<>();
     static int combo = 0;
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void Speed(RenderGameOverlayEvent event){
         if(!event.isCanceled() && event.getType() == RenderGameOverlayEvent.ElementType.ALL){
-            int posX = (event.getWindow().getGuiScaledWidth()) / 2;
-            int posY = (event.getWindow().getGuiScaledHeight()) / 2;
-            Entity entity = Minecraft.getInstance().player;
-            if(((LocalPlayer) entity).getVehicle() != null){
-                entity = ((LocalPlayer) entity).getVehicle();
-            }
+            //int posX = (event.getWindow().getGuiScaledWidth()) / 2;
+            //int posY = (event.getWindow().getGuiScaledHeight()) / 2;
+            Entity entity = Minecraft.getInstance().player.getRootVehicle();
+            /*if(entity.getVehicle() != null){
+                entity = entity.getVehicle();
+            }*/
             Level world = entity.level;
             double x = entity.position().x;
             double y = entity.position().y;
             double z = entity.position().z;
 
             Vec3 vec = entity.getDeltaMovement();
-            Color color = new ColorUIResource(Integer.parseInt((String) Config.Client.color.get(), 16));
+            Color color = new ColorUIResource(Integer.parseInt(Config.Client.color.get(), 16));
 
             if(Config.Client.enabled.get()) {
-                double yOffset = 0.0784000015258789;
-                double xOffset = 0;
-                double zOffset = 0;
+                double yOffset = Config.Client.yOff.get();
+                double xOffset = Config.Client.xOff.get();
+                double zOffset = Config.Client.zOff.get();
+                double vOffset = Config.Client.vOff.get();
 
-                if (entity instanceof Player) {
-                    Player e = (Player) entity;
+                if (entity instanceof Player e) {
                     if (!e.isOnGround() && e.isCreative()) {
                         yOffset = 0;
                     } else if (e.isInWater()) {
@@ -61,15 +60,15 @@ public class Events {
                     yOffset = 0;
                 }
 
-                double speed = Math.sqrt(Math.pow(vec.x + xOffset, 2) + Math.pow(vec.y + yOffset, 2) + Math.pow(vec.z + zOffset, 2)) * 20;
+                double speed = (Math.sqrt(Math.pow(vec.x + xOffset, 2) + Math.pow(vec.y + yOffset, 2) + Math.pow(vec.z + zOffset, 2)) * 20)+vOffset;
                 //Minecraft.getInstance().
                 if (speeds.size() >= Config.Client.maxSampleSize.get()) {
                     speeds.remove(0);
                 }
                 speeds.add(speed);
                 speed = 0;
-                for (int i = 0; i < speeds.size(); i++) {
-                    speed += speeds.get(i);
+                for (Double aDouble : speeds) {
+                    speed += aDouble;
                 }
                 speed = speed / speeds.size();
 
@@ -78,7 +77,7 @@ public class Events {
                     speed = speed * 1.94384449;
                     speedType = "knot";
                 } else {
-                    speedType = (String) Config.Client.speedType.get();
+                    speedType = Config.Client.speedType.get().toString();
                     if (speedType.equals("km/h")) {
                         speed = speed * 3.6;
                     } else if (speedType.equals("mph")) {
@@ -221,6 +220,7 @@ public class Events {
             }
         }
         if(flag) {
+            System.out.println("Selected speed type: "+Config.Client.speedType.get());
             System.out.println(Arrays.toString(paserdPos.toArray()));
             System.out.println(xPos+"");
             flag = !changeFlag;
